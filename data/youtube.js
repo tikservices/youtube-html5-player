@@ -1,32 +1,96 @@
 "use strict";
-function main(){
-	var INFO_URL = 'http://www.youtube.com/get_video_info?hl=en_US&el=detailpage&video_id=';
-	var embed = location.href.search("youtube.com/embed") > -1;
+/*globals videojs*/
+var player, video_container;
+var INFO_URL = 'https://www.youtube.com/get_video_info?hl=en_US&el=detailpage&video_id=';
+function main() {
+	changePlayer();
+	window.addEventListener("spfrequest", function(){
+		if(player)
+			player.src = "";
+	});
+	window.addEventListener("spfdone", function(){
+		changePlayer();
+	});
+}
+function changePlayer(){
+	var embed = location.href.search("youtube.com/embed/") > -1;
 	var normal = location.href.search("youtube.com/watch?") > -1;
-	if (!embed && !normal) return;
-	var video_container, video_id;
+	var channel = location.href.search("youtube.com/channel/") > -1 ||
+		location.href.search(/youtube.com\/user\/[^/?#]*\/featured/) > -1;
+	if (!embed && !normal && !channel) return;
+	var video_id, video_class;
 	if(embed){
 		video_id = location.pathname.match(/embed\/([^?#/]*)/)[1];
+		video_class = "full-frame";
+	} else if (channel){
+		var upsell =  document.getElementById("upsell-video");
+		if(!upsell) return;
+		video_id = upsell.dataset["videoId"];
+		video_class = "html5-main-video";
 	} else {
 		video_id = location.search.slice(1).match(/v=([^/?#]*)/)[1];
+		video_class = "player-width player-height";
 	}
-	video_container = document.getElementsByClassName("html5-video-player")[0];
+	if(!video_id) return;
 	asyncText(INFO_URL + video_id).then(function(data){
 		var info = data.match(/url_encoded_fmt_stream_map=([^&]*)/)[1];
 		info = decodeURIComponent(info);
 		var formats = {};
 		info.split(",").forEach(function(f,i){
-			f = decodeURIComponent(f);
 			var itag = f.match(/itag=([^&]*)/)[1];
-			var url = f.match(/url=([^&]*)/)[1];
+			var url = decodeURIComponent(f.match(/url=([^&]*)/)[1]);
 			if(FORMATS[itag])
-				formats[FORMATS[itag]] = url;
+				formats[itag] = url;
 		});
+		if (Object.keys(FORMATS).length < 1) return;
+		var v_url;
+		for(var i = 0; i < PREF.length && !v_url; i++)
+			if (formats[PREF[i]])
+				v_url = formats[PREF[i]];
+		try{
+			video_container = document.getElementById("player-mole-container");
+			if(embed) video_container = document.body;
+			if(channel) video_container = document.getElementsByClassName("c4-player-container")[0];
+			if(! video_container) return;
+			video_container.innerHTML = "";
+			player = createNode("video",{
+				id: "video_player",
+				src: v_url,
+				className: "video-js vjs-default-skin " + video_class,
+				controls: "true",
+				preload: embed? "false" : "auto",
+				autoplay: embed? "false" : "true"
+			});
+			video_container.appendChild(player);
+/*			if(embed) {
+				player.style.width ="100%";
+				player.style.height="100%";
+			}
+*/
+//			videojs(player, {}, function(){});
+		}catch(e){document.body.innerHTML= "<code>"+e.name+" - "+e.fileName+" - "+e.columnNumber+" - "+e.message+" - \n"+e.stack+"</code>";}
+
 	});
 }
-
-function asyncText(url, headers) {
-    return new Promise(function (resolve, reject) {
+function createNode(type, obj, data, style){
+        var node = document.createElement(type);
+        if (obj)
+            for (var opt in obj)
+                if (obj.hasOwnProperty(opt))
+                    node[opt] = obj[opt];
+        if (data)
+            for (var el in data)
+                if (data.hasOwnProperty(el))
+                    node.dataset[el] = data[el];
+        if (style)
+            for (var st in style)
+                if (style.hasOwnProperty(st))
+                    node.style[st] = style[st];
+	return node;
+}
+function asyncText(url, headers, success) {
+//    return new Promise(function (resolve, reject) {
+    return {then: function(resolve, reject) {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", url, false);
         if (xhr.overrideMimeType)
@@ -48,8 +112,11 @@ function asyncText(url, headers) {
             }
         }
         xhr.send();
-    });
+    }
+    };
+//    );
 }
+var PREF = ["18", "43", "22"];
 var FORMATS = {
 '18': {
 container: 'mp4',
@@ -69,24 +136,6 @@ bitrate: '2-3',
 audioEncoding: 'aac',
 audioBitrate: 192,
 },
-'37': {
-container: 'mp4',
-resolution: '1080p',
-encoding: 'H.264',
-profile: 'high',
-bitrate: '3-5.9',
-audioEncoding: 'aac',
-audioBitrate: 192,
-},
-'38': {
-container: 'mp4',
-resolution: '3072p',
-encoding: 'H.264',
-profile: 'high',
-bitrate: '3.5-5',
-audioEncoding: 'aac',
-audioBitrate: 192,
-},
 '43': {
 container: 'webm',
 resolution: '360p',
@@ -95,34 +144,10 @@ profile: null,
 bitrate: '0.5',
 audioEncoding: 'vorbis',
 audioBitrate: 128,
-},
-'44': {
-container: 'webm',
-resolution: '480p',
-encoding: 'VP8',
-profile: null,
-bitrate: '1',
-audioEncoding: 'vorbis',
-audioBitrate: 128,
-},
-'45': {
-container: 'webm',
-resolution: '720p',
-encoding: 'VP8',
-profile: null,
-bitrate: '2',
-audioEncoding: 'vorbis',
-audioBitrate: 192,
-},
-'46': {
-container: 'webm',
-resolution: '1080p',
-encoding: 'vp8',
-profile: null,
-bitrate: null,
-audioEncoding: 'vorbis',
-audioBitrate: 192,
-},
+}
+};
+var unused = {
+//profile 3d
 '82': {
 container: 'mp4',
 resolution: '360p',
@@ -343,4 +368,6 @@ audioEncoding: null,
 audioBitrate: null,
 },
 };
+try{
 main();
+}catch(e){document.body.innerHTML= "<code>"+e.name+" - "+e.columnNumber+" - "+e.message+" - \n"+e.stack+"</code>";}
