@@ -120,252 +120,122 @@ var PREF = ["18", "43", "22"];
 var FORMATS = {
 '18': {
 container: 'mp4',
-resolution: '360p',
-encoding: 'H.264',
-profile: 'baseline',
-bitrate: '0.5',
-audioEncoding: 'aac',
-audioBitrate: 96,
+resolution: '360p'
 },
 '22': {
 container: 'mp4',
-resolution: '720p',
-encoding: 'H.264',
-profile: 'high',
-bitrate: '2-3',
-audioEncoding: 'aac',
-audioBitrate: 192,
+resolution: '720p'
 },
 '43': {
 container: 'webm',
-resolution: '360p',
-encoding: 'VP8',
-profile: null,
-bitrate: '0.5',
-audioEncoding: 'vorbis',
-audioBitrate: 128,
+resolution: '360p'
 }
 };
-var unused = {
-//profile 3d
+var FORMATS_3D = {
 '82': {
 container: 'mp4',
-resolution: '360p',
-encoding: 'H.264',
-profile: '3d',
-bitrate: '0.5',
-audioEncoding: 'aac',
-audioBitrate: 96,
+resolution: '360p'
 },
 '83': {
 container: 'mp4',
-resolution: '240p',
-encoding: 'H.264',
-profile: '3d',
-bitrate: '0.5',
-audioEncoding: 'aac',
-audioBitrate: 96,
+resolution: '240p'
 },
 '84': {
 container: 'mp4',
-resolution: '720p',
-encoding: 'H.264',
-profile: '3d',
-bitrate: '2-3',
-audioEncoding: 'aac',
-audioBitrate: 192,
+resolution: '720p'
 },
 '85': {
 container: 'mp4',
-resolution: '1080p',
-encoding: 'H.264',
-profile: '3d',
-bitrate: '3-4',
-audioEncoding: 'aac',
-audioBitrate: 192,
+resolution: '1080p'
 },
 '100': {
 container: 'webm',
-resolution: '360p',
-encoding: 'VP8',
-profile: '3d',
-bitrate: null,
-audioEncoding: 'vorbis',
-audioBitrate: 128,
+resolution: '360p'
 },
 '101': {
 container: 'webm',
-resolution: '360p',
-encoding: 'VP8',
-profile: '3d',
-bitrate: null,
-audioEncoding: 'vorbis',
-audioBitrate: 192,
+resolution: '360p'
 },
 '102': {
 container: 'webm',
-resolution: '720p',
-encoding: 'VP8',
-profile: '3d',
-bitrate: null,
-audioEncoding: 'vorbis',
-audioBitrate: 192,
-},
-// DASH (video only)
+resolution: '720p'
+}
+};
+var FORMATS_DASH_VIDEO = {
 '133': {
 container: 'mp4',
-resolution: '240p',
-encoding: 'H.264',
-profile: 'main',
-bitrate: '0.2-0.3',
-audioEncoding: null,
-audioBitrate: null,
+resolution: '240p'
 },
 '134': {
 container: 'mp4',
-resolution: '360p',
-encoding: 'H.264',
-profile: 'main',
-bitrate: '0.3-0.4',
-audioEncoding: null,
-audioBitrate: null,
+resolution: '360p'
 },
 '135': {
 container: 'mp4',
-resolution: '480p',
-encoding: 'H.264',
-profile: 'main',
-bitrate: '0.5-1',
-audioEncoding: null,
-audioBitrate: null,
+resolution: '480p'
 },
 '136': {
 container: 'mp4',
-resolution: '720p',
-encoding: 'H.264',
-profile: 'main',
-bitrate: '1-1.5',
-audioEncoding: null,
-audioBitrate: null,
+resolution: '720p'
 },
 '137': {
 container: 'mp4',
-resolution: '1080p',
-encoding: 'H.264',
-profile: 'high',
-bitrate: '2-3',
-audioEncoding: null,
-audioBitrate: null,
+resolution: '1080p'
 },
 '160': {
 container: 'mp4',
-resolution: '144p',
-encoding: 'H.264',
-profile: 'main',
-bitrate: '0.1',
-audioEncoding: null,
-audioBitrate: null,
+resolution: '144p'
 },
 '264': {
 container: 'mp4',
-resolution: '1440p',
-encoding: 'H.264',
-profile: 'high',
-bitrate: '4-5',
-audioEncoding: null,
-audioBitrate: null,
-},
-// DASH (audio only)
+resolution: '1440p'
+}
+};
+var FORMATS_DASH_AUDIO = {
 '139': {
 container: 'mp4',
-resolution: null,
-encoding: null,
-profile: null,
-bitrate: null,
 audioEncoding: 'aac',
-audioBitrate: 48,
+audioBitrate: 48
 },
 '140': {
 container: 'mp4',
-resolution: null,
-encoding: null,
-profile: null,
-bitrate: null,
 audioEncoding: 'aac',
-audioBitrate: 128,
+audioBitrate: 128
 },
 '141': {
 container: 'mp4',
-resolution: null,
-encoding: null,
-profile: null,
-bitrate: null,
 audioEncoding: 'aac',
-audioBitrate: 256,
+audioBitrate: 256
 },
 '171': {
 container: 'webm',
-resolution: null,
-encoding: null,
-profile: null,
-bitrate: null,
-audioEncoding: 'vorbis',
-audioBitrate: 128,
+audioBitrate: 128
 },
 '172': {
 container: 'webm',
-resolution: null,
-encoding: null,
-profile: null,
-bitrate: null,
-audioEncoding: 'vorbis',
-audioBitrate: 192,
-},
-// Live streaming
+audioBitrate: 192
+}
+};
+var FORMAT_LIVE_STREAM = {
 '242': {
 container: 'webm',
-resolution: '240p',
-encoding: 'VP9',
-profile: null,
-bitrate: '0.14',
-audioEncoding: null,
-audioBitrate: null,
+resolution: '240p'
 },
 '243': {
 container: 'webm',
-resolution: '360p',
-encoding: 'VP9',
-profile: null,
-bitrate: '0.26',
-audioEncoding: null,
-audioBitrate: null,
+resolution: '360p'
 },
 '244': {
 container: 'webm',
-resolution: '480p',
-encoding: 'VP9',
-profile: null,
-bitrate: '0.585',
-audioEncoding: null,
-audioBitrate: null,
+resolution: '480p'
 },
 '247': {
 container: 'webm',
-resolution: '720p',
-encoding: 'VP9',
-profile: null,
-bitrate: '1.184',
-audioEncoding: null,
-audioBitrate: null,
+resolution: '720p'
 },
 '248': {
 container: 'webm',
-resolution: '1080p',
-encoding: 'VP9',
-profile: null,
-bitrate: '1.895',
-audioEncoding: null,
-audioBitrate: null,
+resolution: '1080p'
 },
 };
 try{
