@@ -37,10 +37,10 @@
                     preload: conf.isEmbed ? "false" : "auto",
                     autoplay: conf.isEmbed ? "false" : "true"
                 });
-                // videojs(player, {}, function(){});
+                //videojs(player);
                 video_container.appendChild(player);
             } catch (e) {
-                document.body.innerHTML = "<code>" + e.name + " - " + e.fileName + " - " + e.columnNumber + " - " + e.message + " - \n" + e.stack + "</code>";
+                document.body.innerHTML = "<code>" + e.name + " - " + e.fileName + " - " + e.lineNumber + ":" + e.columnNumber + " - " + e.message + " - \n" + e.stack + "</code>";
             }
         });
     }
@@ -139,6 +139,6 @@
     try {
         main();
     } catch (e) {
-        document.body.innerHTML = "<code>" + e.name + " - " + e.columnNumber + " - " + e.message + " - \n" + e.stack + "</code>";
+        document.body.innerHTML = "<code>" + e.name + " - " + e.fileName + " - " + e.lineNumber + ":" + e.columnNumber + " - " + e.message + " - \n" + e.stack + "</code>";
     }
 }());
