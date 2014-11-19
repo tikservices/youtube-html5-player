@@ -29,14 +29,15 @@
                 if (!video_container)
                     return;
                 video_container.innerHTML = "";
-                player = createNode("video", {
+		var player_opt = {
                     id: "video_player",
                     src: url,
                     className: "video-js vjs-default-skin " + conf.className,
-                    controls: "true",
-                    preload: conf.isEmbed ? "false" : "auto",
-                    autoplay: conf.isEmbed ? "false" : "true"
-                });
+                    controls: "true"
+		};
+		if(! conf.isEmbed)
+			player_opt.autoplay = "true";
+                player = createNode("video", player_opt);
                 //videojs(player);
                 video_container.appendChild(player);
             } catch (e) {
@@ -47,12 +48,12 @@
     function getConfig() {
         var isEmbed = location.href.search("youtube.com/embed/") > -1;
         var isWatch = location.href.search("youtube.com/watch?") > -1;
-        var isChannel = location.href.search("youtube.com/channel/") > -1 || location.href.search(/youtube.com\/user\/[^/?#]*\/featured/) > -1;
+        var isChannel = location.href.search("youtube.com/channel/") > -1 || location.href.search("youtube.com/user/") > -1;
         if (!isEmbed && !isWatch && !isChannel)
             return;
         var video_id, video_class;
         if (isEmbed) {
-            video_id = location.pathname.match(/embed\/([^?#/]*)/)[1];
+            video_id = location.pathname.match(/^\/embed\/([^?#/]*)/)[1];
             video_class = "full-frame";
         } else if (isChannel) {
             var upsell = document.getElementById("upsell-video");
