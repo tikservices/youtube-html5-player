@@ -1,8 +1,48 @@
-var PREF = [
-    "18",
-    "43",
-    "22"
-];
+/* jshint esnext: true */
+/* globals self */
+var OPTIONS = self.options;
+var PREF_FORMATS;
+(function () {
+    "use strict";
+    function generatePrefFormats() {
+        var FORMT = [
+            [
+                "43",
+                // 320p on webm
+                "22"    //720p is not availbale on webm
+            ],
+            [
+                "18",
+                // 320p on mp4
+                "22"    // 720p on mp3
+            ]
+        ];
+        var x = OPTIONS.preferredCodec === 0 ? {
+            i: 0,
+            n: 1
+        } : {
+            i: 1,
+            n: -1
+        };
+        var y = OPTIONS.preferredQuality === 0 ? {
+            i: 0,
+            n: 1
+        } : {
+            i: 1,
+            n: -1
+        };
+        PREF_FORMATS = [];
+        PREF_FORMATS.push(FORMT[x.i][y.i]);
+        PREF_FORMATS.push(FORMT[x.i + x.n][y.i]);
+        PREF_FORMATS.push(FORMT[x.i][y.i + y.n]);
+        PREF_FORMATS.push(FORMT[x.i + x.n][y.i + y.n]);
+    }
+    generatePrefFormats();
+    self.port.on("prefChanged", function (pref) {
+        OPTIONS[pref.name] = pref.value;
+        generatePrefFormats();
+    });
+}());
 var FORMATS = {
     "18": {
         container: "mp4",

@@ -1,4 +1,4 @@
-/*globals videojs, PREF, FORMATS */
+/*globals videojs, PREF_FORMATS, FORMATS */
 (function () {
     "use strict";
     var player, video_container;
@@ -29,14 +29,14 @@
                 if (!video_container)
                     return;
                 video_container.innerHTML = "";
-		var player_opt = {
+                var player_opt = {
                     id: "video_player",
                     src: url,
                     className: "video-js vjs-default-skin " + conf.className,
                     controls: "true"
-		};
-		if(! conf.isEmbed)
-			player_opt.autoplay = "true";
+                };
+                if (!conf.isEmbed)
+                    player_opt.autoplay = "true";
                 player = createNode("video", player_opt);
                 //videojs(player);
                 video_container.appendChild(player);
@@ -88,9 +88,9 @@
             });
             if (Object.keys(FORMATS).length < 1)
                 return Promise.reject();
-            for (var i = 0; i < PREF.length; i++)
-                if (formats[PREF[i]])
-                    return Promise.resolve(formats[PREF[i]]);
+            for (var i = 0; i < PREF_FORMATS.length; i++)
+                if (formats[PREF_FORMATS[i]])
+                    return Promise.resolve(formats[PREF_FORMATS[i]]);
         };
     }
     function createNode(type, obj, data, style) {
