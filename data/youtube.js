@@ -1,7 +1,7 @@
 /*globals videojs, PREF_FORMATS, FORMATS */
 (function () {
     "use strict";
-    var player, video_container;
+    var player, player_container;
     var INFO_URL = "https://www.youtube.com/get_video_info?hl=en_US&el=detailpage&video_id=";
     function main() {
         changePlayer();
@@ -19,16 +19,16 @@
             return;
         asyncText(INFO_URL + conf.id).then(getURL(conf)).then(function (url) {
             try {
-                if (video_container)
-                    video_container.innerHTML = "";
-                video_container = document.getElementById("player-mole-container");
+                if (player_container)
+                    player_container.innerHTML = "";
+                player_container = document.getElementById("player-mole-container");
                 if (conf.isEmbed)
-                    video_container = document.body;
+                    player_container = document.body;
                 if (conf.isChannel)
-                    video_container = document.getElementsByClassName("c4-player-container")[0];
-                if (!video_container)
+                    player_container = document.getElementsByClassName("c4-player-container")[0];
+                if (!player_container)
                     return;
-                video_container.innerHTML = "";
+                player_container.innerHTML = "";
                 var player_opt = {
                     id: "video_player",
                     src: url,
@@ -38,10 +38,10 @@
                 if (!conf.isEmbed)
                     player_opt.autoplay = "true";
                 player = createNode("video", player_opt);
-                //videojs(player);
-                video_container.appendChild(player);
+                //videojs(player); //TODO: use video-js custom video player
+                player_container.appendChild(player);
             } catch (e) {
-                document.body.innerHTML = "<code>" + e.name + " - " + e.fileName + " - " + e.lineNumber + ":" + e.columnNumber + " - " + e.message + " - \n" + e.stack + "</code>";
+                console.log(e);
             }
         });
     }
@@ -51,28 +51,28 @@
         var isChannel = location.href.search("youtube.com/channel/") > -1 || location.href.search("youtube.com/user/") > -1;
         if (!isEmbed && !isWatch && !isChannel)
             return;
-        var video_id, video_class;
+        var player_id, player_class;
         if (isEmbed) {
-            video_id = location.pathname.match(/^\/embed\/([^?#/]*)/)[1];
-            video_class = "full-frame";
+            player_id = location.pathname.match(/^\/embed\/([^?#/]*)/)[1];
+            player_class = "full-frame";
         } else if (isChannel) {
             var upsell = document.getElementById("upsell-video");
             if (!upsell)
                 return;
-            video_id = upsell.dataset["videoId"];
-            video_class = "html5-main-video";
+            player_id = upsell.dataset["videoId"];
+            player_class = "html5-main-video";
         } else {
-            video_id = location.search.slice(1).match(/v=([^/?#]*)/)[1];
-            video_class = "player-width player-height";
+            player_id = location.search.slice(1).match(/v=([^/?#]*)/)[1];
+            player_class = "player-width player-height";
         }
-        if (!video_id)
+        if (!player_id)
             return;
         return {
             isEmbed: isEmbed,
             isWatch: isWatch,
             isChannel: isChannel,
-            id: video_id,
-            className: video_class
+            id: player_id,
+            className: player_class
         };
     }
     function getURL(conf) {
@@ -89,8 +89,9 @@
             if (Object.keys(FORMATS).length < 1)
                 return Promise.reject();
             for (var i = 0; i < PREF_FORMATS.length; i++)
-                if (formats[PREF_FORMATS[i]])
+                if (formats[PREF_FORMATS[i]]) {
                     return Promise.resolve(formats[PREF_FORMATS[i]]);
+                }
         };
     }
     function createNode(type, obj, data, style) {
@@ -111,8 +112,6 @@
     }
     function asyncText(url, headers, success) {
         return new Promise(function (resolve, reject) {
-            //        return {
-            //            then: function (resolve, reject) {
             var xhr = new XMLHttpRequest();
             xhr.open("GET", url, false);
             if (xhr.overrideMimeType)
@@ -134,12 +133,14 @@
                 }
             }
             xhr.send();
-        }    //        };   
-);
+        });
     }
     try {
-        main();
+        if (document.readyState !== "loading")
+            main();
+        else
+            document.addEventListener("DOMContentLoaded", main);
     } catch (e) {
-        document.body.innerHTML = "<code>" + e.name + " - " + e.fileName + " - " + e.lineNumber + ":" + e.columnNumber + " - " + e.message + " - \n" + e.stack + "</code>";
+        console.log(e);
     }
 }());

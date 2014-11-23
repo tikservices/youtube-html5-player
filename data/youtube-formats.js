@@ -1,9 +1,15 @@
 /* jshint esnext: true */
 /* globals self */
-var OPTIONS = self.options;
-var PREF_FORMATS;
+//This Addons Preferences
+var OPTIONS = {};
+//Youtube video formats sorted as preferred
+var PREF_FORMATS = [];
 (function () {
     "use strict";
+    self.port.on("preferences", function (prefs) {
+        OPTIONS = prefs;
+        generatePrefFormats();
+    });
     function generatePrefFormats() {
         var FORMT = [
             [
@@ -37,7 +43,6 @@ var PREF_FORMATS;
         PREF_FORMATS.push(FORMT[x.i][y.i + y.n]);
         PREF_FORMATS.push(FORMT[x.i + x.n][y.i + y.n]);
     }
-    generatePrefFormats();
     self.port.on("prefChanged", function (pref) {
         OPTIONS[pref.name] = pref.value;
         generatePrefFormats();

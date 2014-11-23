@@ -9,22 +9,6 @@
   "version": "0.1",
   "preferences": [
     {
-      "name": "disableEmbed",
-      "title": "Disable for Embed Youtube",
-      "description": "Use default youtube video player for embed videos",
-      "type": "bool",
-      "value": false,
-      "hidden": true
-    },
-    {
-      "name": "dontPlayNext",
-      "title": "Do not play next Item",
-      "description": "Do not tell youtube that video reached the end, so it will no play the next Video on playlist mode",
-      "type": "bool",
-      "value": false,
-      "hidden": true
-    },
-    {
       "name": "preferredCodec",
       "title": "Preferred Codec",
       "type": "menulist",
@@ -55,6 +39,22 @@
           "value": "1"
         }
       ]
+    },
+    {
+      "name": "disableEmbed",
+      "title": "Disable for Embed Youtube",
+      "description": "Use default youtube video player for embed videos",
+      "type": "bool",
+      "value": false,
+      "hidden": true
+    },
+    {
+      "name": "dontPlayNext",
+      "title": "Do not play next Item",
+      "description": "Do not tell youtube that video reached the end, so it will no play the next Video on playlist mode",
+      "type": "bool",
+      "value": false,
+      "hidden": true
     }
   ],
   "permissions": {
