@@ -113,7 +113,7 @@
     function asyncText(url, headers, success) {
         return new Promise(function (resolve, reject) {
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", url, false);
+            xhr.open("GET", url, true);
             if (xhr.overrideMimeType)
                 xhr.overrideMimeType("text/plain");
             xhr.onload = function () {
