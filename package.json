@@ -1,12 +1,12 @@
 {
-  "name": "youtube-html5-player",
-  "title": "Youtube HTML5 Player",
-  "id": "youtube-html5-player@lejenome.me",
+  "name": "youtube-video-player",
+  "title": "Youtube HTML5 Video Player",
+  "id": "youtube-video-player@lejenome.me",
   "description": "Youtube video player stucks a lot, this basic video player sucks less",
   "author": "Moez Bouhlel <bmoez.j@gmail.com> (http://lejenome.github.io/)",
   "homepage": "https://github.com/lejenome/youtube-html5-player",
   "license": "MPL 2.0",
-  "version": "0.1",
+  "version": "0.1.1",
   "preferences": [
     {
       "name": "preferredCodec",
