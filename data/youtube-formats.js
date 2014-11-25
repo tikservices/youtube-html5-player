@@ -4,6 +4,9 @@
 var OPTIONS = {};
 //Youtube video formats sorted as preferred
 var PREF_FORMATS = [];
+// will be defined on youtube.js later
+var prefChangeHandler = function () {
+};
 (function () {
     "use strict";
     self.port.on("preferences", function (prefs) {
@@ -45,7 +48,9 @@ var PREF_FORMATS = [];
     }
     self.port.on("prefChanged", function (pref) {
         OPTIONS[pref.name] = pref.value;
-        generatePrefFormats();
+        if (pref.name === "preferredCodec" || pref.name === "preferredQuality")
+            generatePrefFormats();
+        prefChangeHandler(pref);
     });
 }());
 var FORMATS = {

@@ -1,4 +1,4 @@
-/*globals videojs, PREF_FORMATS, FORMATS */
+/*globals videojs, PREF_FORMATS, FORMATS, OPTIONS, prefChangeHandler */
 (function () {
     "use strict";
     var player, player_container;
@@ -12,6 +12,11 @@
         window.addEventListener("spfdone", function () {
             changePlayer();
         });
+        prefChangeHandler = function (pref) {
+            if (player && pref.name === "volume") {
+                player[pref.name] = pref.value / 100;
+            }
+        };
     }
     function changePlayer() {
         var conf = getConfig();
@@ -33,15 +38,16 @@
                     id: "video_player",
                     src: url,
                     className: "video-js vjs-default-skin " + conf.className,
-                    controls: "true"
+                    controls: true,
+                    volume: OPTIONS.volume / 100
                 };
                 if (!conf.isEmbed)
-                    player_opt.autoplay = "true";
+                    player_opt.autoplay = true;
                 player = createNode("video", player_opt);
                 //videojs(player); //TODO: use video-js custom video player
                 player_container.appendChild(player);
             } catch (e) {
-                console.log(e);
+                console.error("Exception on changePlayer()", e.lineNumber, e.columnNumber, e.message, e.stack);
             }
         });
     }
@@ -141,6 +147,6 @@
         else
             document.addEventListener("DOMContentLoaded", main);
     } catch (e) {
-        console.log(e);
+        console.error("Exception on main()", e.lineNumber, e.columnNumber, e.message, e.stack);
     }
 }());

@@ -41,6 +41,12 @@
       ]
     },
     {
+      "name": "volume",
+      "title": "Volume",
+      "type": "integer",
+      "value": 100
+    },
+    {
       "name": "disableEmbed",
       "title": "Disable for Embed Youtube",
       "description": "Use default youtube video player for embed videos",
