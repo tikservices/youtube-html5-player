@@ -5,25 +5,25 @@ var OPTIONS = {};
 //Youtube video formats sorted as preferred
 var PREF_FORMATS = [];
 // will be defined on youtube.js later
-var prefChangeHandler = function () {
-};
-(function () {
+var prefChangeHandler = function() {};
+(function() {
     "use strict";
-    self.port.on("preferences", function (prefs) {
+    self.port.on("preferences", function(prefs) {
         OPTIONS = prefs;
         generatePrefFormats();
     });
+
     function generatePrefFormats() {
         var FORMT = [
             [
                 "43",
                 // 320p on webm
-                "22"    //720p is not availbale on webm
+                "22" //720p is not availbale on webm
             ],
             [
                 "18",
                 // 320p on mp4
-                "22"    // 720p on mp3
+                "22" // 720p on mp3
             ]
         ];
         var x = OPTIONS.preferredCodec === 0 ? {
@@ -46,7 +46,7 @@ var prefChangeHandler = function () {
         PREF_FORMATS.push(FORMT[x.i][y.i + y.n]);
         PREF_FORMATS.push(FORMT[x.i + x.n][y.i + y.n]);
     }
-    self.port.on("prefChanged", function (pref) {
+    self.port.on("prefChanged", function(pref) {
         OPTIONS[pref.name] = pref.value;
         if (pref.name === "preferredCodec" || pref.name === "preferredQuality")
             generatePrefFormats();
