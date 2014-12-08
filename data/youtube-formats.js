@@ -67,6 +67,9 @@ var FORMATS = {
         resolution: "360p"
     }
 };
+/*
+ * STILL NOT SUPPORTED FORMATS
+ */
 var FORMATS_3D = {
     "82": {
         container: "mp4",

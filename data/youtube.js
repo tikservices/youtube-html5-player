@@ -108,6 +108,7 @@
                 if (formats[PREF_FORMATS[i]]) {
                     conf.url = formats[PREF_FORMATS[i]];
                     resolve(conf);
+                    break;
                 }
         });
     }
