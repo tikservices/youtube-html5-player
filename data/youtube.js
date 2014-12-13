@@ -4,6 +4,7 @@
     var player, player_container;
 
     function main() {
+        player = createNode("video");
         changePlayer();
         window.addEventListener("spfrequest", function() {
             if (player)
@@ -37,7 +38,6 @@
                     player_container.innerHTML = "";
                     var player_opt = {
                         id: "video_player",
-                        src: conf.url,
                         className: "video-js vjs-default-skin " + conf.className,
                         controls: true,
                         volume: OPTIONS.volume / 100
@@ -47,6 +47,10 @@
                     else
                         player_opt.autoplay = true;
                     player = createNode("video", player_opt);
+                    player.appendChild(createNode("source", {
+                        src: conf.url,
+                        type: conf.type
+                    }));
                     //videojs(player); //TODO: use video-js custom video player
                     player_container.appendChild(player);
                 } catch (e) {
@@ -99,14 +103,20 @@
             info.split(",").forEach(function(f, i) {
                 var itag = f.match(/itag=([^&]*)/)[1];
                 var url = decodeURIComponent(f.match(/url=([^&]*)/)[1]);
-                if (FORMATS[itag])
-                    formats[itag] = url;
+                var type = decodeURIComponent(f.match(/type=([^&]*)/)[1]);
+                type = type.replace("+", " ", "g");
+                if (player.canPlayType(type) === "probably")
+                    formats[itag] = {
+                        url: url,
+                        type: type
+                    };
             });
             if (Object.keys(FORMATS).length < 1)
                 return Promise.reject();
             for (var i = 0; i < PREF_FORMATS.length; i++)
                 if (formats[PREF_FORMATS[i]]) {
-                    conf.url = formats[PREF_FORMATS[i]];
+                    conf.url = formats[PREF_FORMATS[i]].url;
+                    conf.type = formats[PREF_FORMATS[i]].type;
                     resolve(conf);
                     break;
                 }

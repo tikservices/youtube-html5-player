@@ -56,15 +56,18 @@ var prefChangeHandler = function() {};
 var FORMATS = {
     "18": {
         container: "mp4",
-        resolution: "360p"
+        resolution: "360p",
+        type: "video/mp4; codecs=\"avc1.42001E, mp4a.40.2\""
     },
     "22": {
         container: "mp4",
-        resolution: "720p"
+        resolution: "720p",
+        type: "video/mp4; codecs=\"avc1.64001F, mp4a.40.2\""
     },
     "43": {
         container: "webm",
-        resolution: "360p"
+        resolution: "360p",
+        type: "video/webm; codecs=\"vp8.0, vorbis\""
     }
 };
 /*
