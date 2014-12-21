@@ -1,4 +1,4 @@
-/*globals videojs, PREF_FORMATS, FORMATS, OPTIONS*/
+/*globals FMT_WRAPPER*/
 (function() {
     "use strict";
     var player, player_container;
@@ -13,17 +13,13 @@
         window.addEventListener("spfdone", function() {
             changePlayer();
         });
-        window.prefChangeHandler = function(pref) {
-            if (player && pref.name === "volume") {
-                player[pref.name] = pref.value / 100;
-            }
-        };
+        handleVolChange(player);
     }
+    onReady(main);
 
     function changePlayer() {
         getConfig()
             .then(getVideoInfo)
-            .then(processInfo)
             .then(function(conf) {
                 try {
                     if (player_container)
@@ -39,13 +35,13 @@
                     var player_opt = {
                         id: "video_player",
                         className: "video-js vjs-default-skin " + conf.className,
+                        autoplay: autoPlay(!conf.isEmbed),
+                        preload: preLoad(),
                         controls: true,
                         volume: OPTIONS.volume / 100
                     };
                     if (conf.isEmbed)
                         player_opt.poster = conf.poster ? conf.poster : "";
-                    else
-                        player_opt.autoplay = true;
                     player = createNode("video", player_opt);
                     player.appendChild(createNode("source", {
                         src: conf.url,
@@ -92,80 +88,45 @@
         });
     }
 
-    function processInfo([conf, data]) {
-        return new Promise(function(resolve, reject) {
+    function getVideoInfo(conf) {
+        var INFO_URL = "https://www.youtube.com/get_video_info?hl=en_US&el=detailpage&video_id=";
+        return asyncGet(INFO_URL + conf.id, {}, "text/plain").then(function(data) {
+            // get the poster url
             var poster = data.match(/iurlhq=([^&]*)/);
             if (poster)
                 conf.poster = decodeURIComponent(poster[1]);
+            // extract avalable formats to fmts object
             var info = data.match(/url_encoded_fmt_stream_map=([^&]*)/)[1];
             info = decodeURIComponent(info);
-            var formats = {};
-            info.split(",").forEach(function(f, i) {
-                var itag = f.match(/itag=([^&]*)/)[1];
-                var url = decodeURIComponent(f.match(/url=([^&]*)/)[1]);
-                var type = decodeURIComponent(f.match(/type=([^&]*)/)[1]);
-                type = type.replace("+", " ", "g");
-                if (player.canPlayType(type) === "probably")
-                    formats[itag] = {
-                        url: url,
-                        type: type
-                    };
-            });
-            if (Object.keys(FORMATS).length < 1)
+            var fmt, fmts = {};
+            info.split(",")
+                .map(it1 => {
+                    var oo = {};
+                    it1.split("&")
+                        .map(it2 => it2.split("="))
+                        .map(it3 => [it3[0], decodeURIComponent(it3[1])])
+                        .forEach(it4 => oo[it4[0]] = it4[1]);
+                    return oo;
+                })
+                .filter(it5 => (player.canPlayType(
+                    (it5.type = it5.type.replace("+", " ", "g"))
+                ) === "probably"))
+                .filter(it6 => {
+                    if (it6.url.search("signature=") > 0)
+                        return true;
+                    logify("Url without signature!!", it6);
+                    return false;
+                })
+                .forEach(fmt => fmts[fmt.itag] = fmt);
+            // choose best format from fmts onject
+            fmt = getPreferredFmt(fmts, FMT_WRAPPER);
+            if (fmt === undefined) {
                 return Promise.reject();
-            for (var i = 0; i < PREF_FORMATS.length; i++)
-                if (formats[PREF_FORMATS[i]]) {
-                    conf.url = formats[PREF_FORMATS[i]].url;
-                    conf.type = formats[PREF_FORMATS[i]].type;
-                    resolve(conf);
-                    break;
-                }
+            } else {
+                conf.url = fmt.url;
+                conf.type = fmt.type;
+                return Promise.resolve(conf);
+            }
         });
-    }
-
-    function createNode(type, obj, data, style) {
-        var node = document.createElement(type);
-        if (obj)
-            for (var opt in obj)
-                if (obj.hasOwnProperty(opt))
-                    node[opt] = obj[opt];
-        if (data)
-            for (var el in data)
-                if (data.hasOwnProperty(el))
-                    node.dataset[el] = data[el];
-        if (style)
-            for (var st in style)
-                if (style.hasOwnProperty(st))
-                    node.style[st] = style[st];
-        return node;
-    }
-
-    function getVideoInfo(conf) {
-        return new Promise(function(resolve, reject) {
-            var INFO_URL = "https://www.youtube.com/get_video_info?hl=en_US&el=detailpage&video_id=";
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", INFO_URL + conf.id, true);
-            if (xhr.overrideMimeType)
-                xhr.overrideMimeType("text/plain");
-            xhr.onload = function() {
-                if (this.status !== 200) {
-                    reject(this.status);
-                    return;
-                }
-                resolve([conf, this.responseText]);
-            };
-            xhr.onerror = function() {
-                reject();
-            };
-            xhr.send();
-        });
-    }
-    try {
-        if (document.readyState !== "loading")
-            main();
-        else
-            document.addEventListener("DOMContentLoaded", main);
-    } catch (e) {
-        console.error("Exception on main()", e.lineNumber, e.columnNumber, e.message, e.stack);
     }
 }());

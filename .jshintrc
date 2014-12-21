@@ -5,7 +5,7 @@
   "curly": false,
   "eqeqeq": true,
   "freeze": true,
-  "forin": true,
+  "forin": false,
   "immed": true,
   "indent": 4,
   "latedef": "nofunc",
@@ -50,5 +50,20 @@
   "supernew": false,
   "validthis": false,
   "browser": true,
-  "devel": true
+  "devel": true,
+  "node": true,
+  "predef": [
+    "OPTIONS",
+    "logify",
+    "onPrefChange",
+    "self",
+    "createNode",
+    "onReady",
+    "onInit",
+    "getPreferredFmt",
+    "handleVolChange",
+    "autoPlay",
+    "preLoad",
+    "asyncGet"
+  ]
 }
