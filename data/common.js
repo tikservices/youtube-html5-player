@@ -1,4 +1,6 @@
-/* global OPTIONS:true, onPrefChange:true, getPreferredFmt:true, createNode:true, asyncGet:true, onReady:true, onInit:true, handleVolChange:true, logify:true, preLoad: true, autoPlay:true */
+/* global OPTIONS:true, onPrefChange:true, getPreferredFmt:true */
+/* global createNode:true, asyncGet:true, onReady:true, onInit:true, logify:true */
+/* global preLoad:true, autoPlay:true, HANDLE_VOL_PREF_CHANGE:true */
 // the following jshint global rule is only because jshint support for ES6 arrow
 // functions is limited
 /* global wrapper:true, args:true, auto:true */
@@ -8,11 +10,14 @@
 var OPTIONS = {};
 // push your prefernces change listner function to this table, yah the old way
 const onPrefChange = [];
-const Qlt = ["higher",
+const Qlt = [
+    "higher",
     "high",
     "medium",
     "low"
 ];
+// set it to false if the module uses custom listener
+var HANDLE_VOL_PREF_CHANGE = true;
 const Cdc = ["webm", "mp4"];
 self.port.on("preferences", function(prefs) {
     OPTIONS = prefs;
@@ -21,6 +26,10 @@ self.port.on("preferences", function(prefs) {
 
 self.port.on("prefChanged", function(pref) {
     OPTIONS[pref.name] = pref.value;
+    if (pref.name === "volume" && HANDLE_VOL_PREF_CHANGE === true)
+        Array.forEach(document.getElementsByTagName("video"), el => {
+            el.volume = OPTIONS.volume / 100;
+        });
     onPrefChange.forEach(f => f(pref.name));
 });
 
@@ -46,15 +55,15 @@ const getPreferredFmt = (fmts, wrapper = {}) => {
     logify("Error on getPreferredFmt", fmts, wrapper);
 };
 
-const createNode = (type, prprt, data, style) => {
+const createNode = (type, prprt, style, data) => {
     logify("createNode", type, prprt);
     var node = document.createElement(type);
     if (prprt)
         Object.keys(prprt).forEach(p => node[p] = prprt[p]);
-    if (data)
-        Object.keys(data).forEach(d => node.dataset[d] = data[d]);
     if (style)
         Object.keys(style).forEach(s => node.style[s] = style[s]);
+    if (data)
+        Object.keys(data).forEach(d => node.dataset[d] = data[d]);
     return node;
 };
 
@@ -84,14 +93,6 @@ const asyncGet = (url, headers, mimetype) => {
 
 const logify = (...args) =>
     console.log.apply(console, args.map(s => JSON.stringify(s, null, 2)));
-
-const handleVolChange = player => {
-    onPrefChange.push(function(pref) {
-        if (player && pref === "volume") {
-            player.volume = OPTIONS[pref] / 100;
-        }
-    });
-};
 
 const onReady = f => {
     //TODO: document readyState is "loading" (and DOMECotentLoaded) even DOM elements are
