@@ -109,7 +109,7 @@
     {
       "name": "disableEmbed",
       "title": "Disable for Embed Youtube",
-      "description": "Use default youtube video player for embed videos",
+      "description": "Use default video player for embed videos",
       "type": "bool",
       "value": false,
       "hidden": true
