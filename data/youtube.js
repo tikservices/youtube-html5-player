@@ -3,7 +3,7 @@
     "use strict";
     var player, player_container;
 
-    onReady(() => {
+    onInit(() => {
         player = createNode("video");
         changePlayer();
         window.addEventListener("spfrequest", function() {
