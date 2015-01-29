@@ -17,5 +17,5 @@ perl -0777 -pe 's/(const drivers = \[)[^\]]*(\];)/\1\nrequire(".\/youtube")\n\2/
 
 make
 git add --all
-[ "$(git diff --name-only --staged | wc -l)" -lt 1 ] && exit 0
+[ "$(git diff --name-only --staged | wc -l)" -le 1 ] && exit 0
 git commit -m "update to lastest HTML5-video-everywhere code revision"
